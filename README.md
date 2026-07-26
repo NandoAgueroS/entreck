@@ -25,7 +25,20 @@ Backend and mobile are **independent builds** in one monorepo. Do not cross-impo
 
 ## Backend (quick start)
 
-Requirements: **JDK 21**, PostgreSQL 16 (when you wire the datasource).
+Requirements: **JDK 21**, **Docker + Docker Compose** for the local database.
+
+### Run with Docker
+
+```bash
+cp .env.example .env
+# Edit .env with real values, then:
+docker compose up
+```
+
+The backend container builds from `./backend/Dockerfile` and connects to the
+`postgres:16` service. Health checks are exposed at `/actuator/health`.
+
+### Run locally for development
 
 ```bash
 cd backend
@@ -36,7 +49,16 @@ cd backend
 
 Prefer `./mvnw` over a system `mvn` so the Maven version stays pinned.
 
-API will be versioned under `/api/v1` once endpoints exist.
+The local database is provided by Testcontainers during tests; no manual
+PostgreSQL installation is required for `./mvnw test`.
+
+### v1 security trust boundary
+
+All endpoints are public in v1. The baseline `SecurityFilterChain` permits all
+requests so the API can be deployed behind a private network or an auth proxy.
+JWT-based authentication is planned for v1.1.
+
+API endpoints are versioned under `/api/v1` once slices 2-6 land.
 
 ## Mobile
 
