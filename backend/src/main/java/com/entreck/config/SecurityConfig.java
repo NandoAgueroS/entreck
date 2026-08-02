@@ -12,8 +12,6 @@ import org.springframework.security.web.SecurityFilterChain;
  * <p>All endpoints are publicly accessible in v1. The scaffold is intentionally
  * stateless so that a JWT filter can be inserted in v1.1 without rewriting
  * controllers.
- *
- * @see <a href="https://github.com/entreck/entreck">Entreck repository</a>
  */
 @Configuration
 public class SecurityConfig {
@@ -31,7 +29,7 @@ public class SecurityConfig {
       .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
       .sessionManagement(session ->
-        session.sessionCreationPolicy(SessionCreationPolicy.NEVER));
+        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     return http.build();
   }
