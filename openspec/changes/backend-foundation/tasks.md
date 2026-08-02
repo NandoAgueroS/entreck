@@ -54,19 +54,20 @@ Chain strategy: feature-branch-chain
 ## Slice 2 — Event Domain + Application (~200 lines)
 
 ### domain
-- [ ] **2.1.1** Create `event/domain/Event.java` — aggregate root, state transitions `DRAFT→PUBLISHED→CANCELLED` via methods (design §2.2).
-- [ ] **2.1.2** Create `event/domain/EventStatus.java` — enum DRAFT/PUBLISHED/CANCELLED.
-- [ ] **2.1.3** Create `event/domain/repository/EventRepository.java` — port: `save`, `findById(EventId)`, `search(criteria, pageable)`, `findByName`, `existsByName`.
+- [x] **2.1.1** Create `event/domain/Event.java` — aggregate root, state transitions `DRAFT→PUBLISHED→CANCELLED` via methods (design §2.2).
+- [x] **2.1.2** Create `event/domain/EventStatus.java` — enum DRAFT/PUBLISHED/CANCELLED.
+- [x] **2.1.3** Create `event/domain/repository/EventRepository.java` — port: `save`, `findById(EventId)`, `search(criteria, pageable)`, `findByName`, `existsByName`.
+- [x] **2.1.4** Create `event/domain/EventSearchCriteria.java` — immutable search criteria record (name + category filters).
 
 ### application
-- [ ] **2.2.1** Create `event/application/usecase/{PublishEventUseCase,UpdateEventUseCase,FindEventsUseCase,GetEventDetailUseCase}.java` — one interactor per use case (O01, O02, B01/B02, B03).
-- [ ] **2.2.2** Create `event/application/dto/{CreateEventRequest,UpdateEventRequest,EventResponse,EventSummaryResponse,EventDetailResponse}.java` — DTOs with `@Valid` constraints.
-- [ ] **2.2.3** Create `event/application/exception/{EventNotFoundException,DuplicateEventNameException}.java` — extend `KernelException`.
+- [x] **2.2.1** Create `event/application/usecase/{PublishEventUseCase,UpdateEventUseCase,FindEventsUseCase,GetEventDetailUseCase}.java` — one interactor per use case (O01, O02, B01/B02, B03).
+- [x] **2.2.2** Create `event/application/dto/{CreateEventRequest,UpdateEventRequest,EventResponse,EventSummaryResponse,EventDetailResponse}.java` — DTOs with `@Valid` constraints.
+- [x] **2.2.3** Create `event/application/exception/{EventNotFoundException,DuplicateEventNameException}.java` — extend `KernelException`.
 
 ### tests
-- [ ] **2.3.1** Create `EventTest.java` — aggregate invariants (name uniqueness semantics, valid status transitions, publish/cancel preconditions).
-- [ ] **2.3.2** Create `*UseCaseTest.java` per use case (4 files) — JUnit 5 + Mockito mocking `EventRepository`, AssertJ assertions.
-- [ ] **2.3.3** Verify `./mvnw test` passes — domain + application unit tests green.
+- [x] **2.3.1** Create `EventTest.java` — aggregate invariants (name uniqueness semantics, valid status transitions, publish/cancel preconditions).
+- [x] **2.3.2** Create `*UseCaseTest.java` per use case (4 files) — JUnit 5 + Mockito mocking `EventRepository`, AssertJ assertions.
+- [x] **2.3.3** Verify `./mvnw test` passes — domain + application unit tests green (37 tests, 0 failures).
 
 ## Slice 3 — Event Infrastructure + API (~250 lines)
 
