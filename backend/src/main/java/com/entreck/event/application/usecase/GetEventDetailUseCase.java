@@ -12,7 +12,7 @@ import com.entreck.shared.domain.id.EventId;
  * <p>Returns a complete view of the event including all fields. Raises
  * {@link EventNotFoundException} if the event does not exist.
  */
-public class GetEventDetailUseCase {
+public class GetEventDetailUseCase implements GetEventDetailUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -32,6 +32,7 @@ public class GetEventDetailUseCase {
    * @return the full event detail response
    * @throws EventNotFoundException if the event does not exist
    */
+  @Override
   public EventDetailResponse execute(EventId eventId) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new EventNotFoundException(eventId));

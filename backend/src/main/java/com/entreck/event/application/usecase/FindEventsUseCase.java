@@ -16,7 +16,7 @@ import java.util.List;
  * <p>Supports filtering by name and/or category, with pagination. Returns
  * lightweight summaries suitable for list views.
  */
-public class FindEventsUseCase {
+public class FindEventsUseCase implements FindEventsUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -38,6 +38,7 @@ public class FindEventsUseCase {
    * @param size the page size
    * @return a paginated result of event summaries
    */
+  @Override
   public DomainPage<EventSummaryResponse> execute(
       String name, EventCategory category, int page, int size) {
     EventSearchCriteria criteria = new EventSearchCriteria(name, category);

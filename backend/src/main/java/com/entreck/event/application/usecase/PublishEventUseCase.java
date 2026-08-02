@@ -17,7 +17,7 @@ import java.time.Instant;
  * event name must be unique; a {@link DuplicateEventNameException} is raised
  * if a conflict is detected.
  */
-public class PublishEventUseCase {
+public class PublishEventUseCase implements PublishEventUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -39,6 +39,7 @@ public class PublishEventUseCase {
    * @return the published event response
    * @throws DuplicateEventNameException if the event name already exists
    */
+  @Override
   public EventResponse execute(CreateEventRequest request, OrganizerId organizerId, EventId eventId) {
     if (eventRepository.existsByName(request.name())) {
       throw new DuplicateEventNameException(request.name());

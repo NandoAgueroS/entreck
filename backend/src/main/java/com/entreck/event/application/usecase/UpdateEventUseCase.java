@@ -14,7 +14,7 @@ import com.entreck.shared.domain.id.EventId;
  * <p>Applies partial updates (PATCH semantics) to an event. Only non-null
  * fields in the request are applied. The event name must remain unique.
  */
-public class UpdateEventUseCase {
+public class UpdateEventUseCase implements UpdateEventUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -37,6 +37,7 @@ public class UpdateEventUseCase {
    * @throws DuplicateEventNameException if the new name conflicts with another event
    * @throws IllegalStateException if the event is CANCELLED and cannot be updated
    */
+  @Override
   public EventResponse execute(EventId eventId, UpdateEventRequest request) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new EventNotFoundException(eventId));
