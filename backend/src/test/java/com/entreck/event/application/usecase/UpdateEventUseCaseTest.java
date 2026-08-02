@@ -4,6 +4,7 @@ import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.dto.UpdateEventRequest;
 import com.entreck.event.application.exception.DuplicateEventNameException;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.usecase.impl.UpdateEventUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
 import com.entreck.event.domain.repository.EventRepository;
@@ -27,13 +28,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("UpdateEventUseCase")
+@DisplayName("UpdateEventUseCaseImpl")
 class UpdateEventUseCaseTest {
 
   @Mock
   private EventRepository eventRepository;
 
-  private UpdateEventUseCase useCase;
+  private UpdateEventUseCaseImpl useCase;
 
   private final EventId eventId = new EventId(1L);
   private final OrganizerId organizerId = new OrganizerId(10L);
@@ -54,7 +55,7 @@ class UpdateEventUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    useCase = new UpdateEventUseCase(eventRepository);
+    useCase = new UpdateEventUseCaseImpl(eventRepository);
   }
 
   @Test

@@ -3,6 +3,7 @@ package com.entreck.event.application.usecase;
 import com.entreck.event.application.dto.CreateEventRequest;
 import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.exception.DuplicateEventNameException;
+import com.entreck.event.application.usecase.impl.PublishEventUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
 import com.entreck.event.domain.repository.EventRepository;
@@ -27,20 +28,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("PublishEventUseCase")
+@DisplayName("PublishEventUseCaseImpl")
 class PublishEventUseCaseTest {
 
   @Mock
   private EventRepository eventRepository;
 
-  private PublishEventUseCase useCase;
+  private PublishEventUseCaseImpl useCase;
 
   private final EventId eventId = new EventId(1L);
   private final OrganizerId organizerId = new OrganizerId(10L);
 
   @BeforeEach
   void setUp() {
-    useCase = new PublishEventUseCase(eventRepository);
+    useCase = new PublishEventUseCaseImpl(eventRepository);
   }
 
   @Test

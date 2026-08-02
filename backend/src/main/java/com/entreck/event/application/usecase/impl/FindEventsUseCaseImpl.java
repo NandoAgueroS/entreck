@@ -1,13 +1,12 @@
-package com.entreck.event.application.usecase;
+package com.entreck.event.application.usecase.impl;
 
 import com.entreck.event.application.dto.EventSummaryResponse;
+import com.entreck.event.application.usecase.FindEventsUseCaseInterface;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventSearchCriteria;
 import com.entreck.event.domain.repository.EventRepository;
 import com.entreck.shared.domain.DomainPage;
 import com.entreck.shared.domain.enums.EventCategory;
-import com.entreck.shared.domain.id.EventId;
-import com.entreck.shared.domain.id.OrganizerId;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ import java.util.List;
  * <p>Supports filtering by name and/or category, with pagination. Returns
  * lightweight summaries suitable for list views.
  */
-public class FindEventsUseCase implements FindEventsUseCaseInterface {
+public class FindEventsUseCaseImpl implements FindEventsUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -25,7 +24,7 @@ public class FindEventsUseCase implements FindEventsUseCaseInterface {
    *
    * @param eventRepository the event repository port
    */
-  public FindEventsUseCase(EventRepository eventRepository) {
+  public FindEventsUseCaseImpl(EventRepository eventRepository) {
     this.eventRepository = eventRepository;
   }
 

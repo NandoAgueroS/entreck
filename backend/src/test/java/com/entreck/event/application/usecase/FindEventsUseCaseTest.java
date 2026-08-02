@@ -1,6 +1,7 @@
 package com.entreck.event.application.usecase;
 
 import com.entreck.event.application.dto.EventSummaryResponse;
+import com.entreck.event.application.usecase.impl.FindEventsUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventSearchCriteria;
 import com.entreck.event.domain.EventStatus;
@@ -27,13 +28,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("FindEventsUseCase")
+@DisplayName("FindEventsUseCaseImpl")
 class FindEventsUseCaseTest {
 
   @Mock
   private EventRepository eventRepository;
 
-  private FindEventsUseCase useCase;
+  private FindEventsUseCaseImpl useCase;
 
   private final EventId eventId1 = new EventId(1L);
   private final EventId eventId2 = new EventId(2L);
@@ -55,7 +56,7 @@ class FindEventsUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    useCase = new FindEventsUseCase(eventRepository);
+    useCase = new FindEventsUseCaseImpl(eventRepository);
   }
 
   @Test

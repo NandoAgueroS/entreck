@@ -2,6 +2,7 @@ package com.entreck.event.application.usecase;
 
 import com.entreck.event.application.dto.EventDetailResponse;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.usecase.impl.GetEventDetailUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
 import com.entreck.event.domain.repository.EventRepository;
@@ -24,13 +25,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("GetEventDetailUseCase")
+@DisplayName("GetEventDetailUseCaseImpl")
 class GetEventDetailUseCaseTest {
 
   @Mock
   private EventRepository eventRepository;
 
-  private GetEventDetailUseCase useCase;
+  private GetEventDetailUseCaseImpl useCase;
 
   private final EventId eventId = new EventId(1L);
   private final OrganizerId organizerId = new OrganizerId(10L);
@@ -38,7 +39,7 @@ class GetEventDetailUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    useCase = new GetEventDetailUseCase(eventRepository);
+    useCase = new GetEventDetailUseCaseImpl(eventRepository);
   }
 
   @Test

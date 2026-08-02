@@ -1,7 +1,8 @@
-package com.entreck.event.application.usecase;
+package com.entreck.event.application.usecase.impl;
 
 import com.entreck.event.application.dto.EventDetailResponse;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.usecase.GetEventDetailUseCaseInterface;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.repository.EventRepository;
 import com.entreck.shared.domain.id.EventId;
@@ -12,7 +13,7 @@ import com.entreck.shared.domain.id.EventId;
  * <p>Returns a complete view of the event including all fields. Raises
  * {@link EventNotFoundException} if the event does not exist.
  */
-public class GetEventDetailUseCase implements GetEventDetailUseCaseInterface {
+public class GetEventDetailUseCaseImpl implements GetEventDetailUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -21,7 +22,7 @@ public class GetEventDetailUseCase implements GetEventDetailUseCaseInterface {
    *
    * @param eventRepository the event repository port
    */
-  public GetEventDetailUseCase(EventRepository eventRepository) {
+  public GetEventDetailUseCaseImpl(EventRepository eventRepository) {
     this.eventRepository = eventRepository;
   }
 

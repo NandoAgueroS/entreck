@@ -1,8 +1,9 @@
-package com.entreck.event.application.usecase;
+package com.entreck.event.application.usecase.impl;
 
 import com.entreck.event.application.dto.CreateEventRequest;
 import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.exception.DuplicateEventNameException;
+import com.entreck.event.application.usecase.PublishEventUseCaseInterface;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
 import com.entreck.event.domain.repository.EventRepository;
@@ -17,7 +18,7 @@ import java.time.Instant;
  * event name must be unique; a {@link DuplicateEventNameException} is raised
  * if a conflict is detected.
  */
-public class PublishEventUseCase implements PublishEventUseCaseInterface {
+public class PublishEventUseCaseImpl implements PublishEventUseCaseInterface {
 
   private final EventRepository eventRepository;
 
@@ -26,7 +27,7 @@ public class PublishEventUseCase implements PublishEventUseCaseInterface {
    *
    * @param eventRepository the event repository port
    */
-  public PublishEventUseCase(EventRepository eventRepository) {
+  public PublishEventUseCaseImpl(EventRepository eventRepository) {
     this.eventRepository = eventRepository;
   }
 
