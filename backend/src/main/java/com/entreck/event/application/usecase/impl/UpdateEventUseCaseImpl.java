@@ -4,6 +4,7 @@ import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.dto.UpdateEventRequest;
 import com.entreck.event.application.exception.DuplicateEventNameException;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.UpdateEventUseCase;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.repository.EventRepository;
@@ -18,14 +19,17 @@ import com.entreck.shared.domain.id.EventId;
 public class UpdateEventUseCaseImpl implements UpdateEventUseCase {
 
   private final EventRepository eventRepository;
+  private final EventMapper eventMapper;
 
   /**
    * Constructs the use case with the required port.
    *
    * @param eventRepository the event repository port
+   * @param eventMapper the event mapper
    */
-  public UpdateEventUseCaseImpl(EventRepository eventRepository) {
+  public UpdateEventUseCaseImpl(EventRepository eventRepository, EventMapper eventMapper) {
     this.eventRepository = eventRepository;
+    this.eventMapper = eventMapper;
   }
 
   /**
@@ -55,6 +59,6 @@ public class UpdateEventUseCaseImpl implements UpdateEventUseCase {
         request.description() != null ? request.description() : event.description());
 
     Event saved = eventRepository.save(event);
-    return EventResponse.from(saved);
+    return eventMapper.toResponse(saved);
   }
 }

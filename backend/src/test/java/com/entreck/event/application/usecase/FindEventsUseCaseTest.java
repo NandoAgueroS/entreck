@@ -1,6 +1,7 @@
 package com.entreck.event.application.usecase;
 
 import com.entreck.event.application.dto.EventSummaryResponse;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.impl.FindEventsUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventSearchCriteria;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +35,9 @@ class FindEventsUseCaseTest {
 
   @Mock
   private EventRepository eventRepository;
+
+  @Mock
+  private EventMapper eventMapper;
 
   private FindEventsUseCaseImpl useCase;
 
@@ -56,7 +61,13 @@ class FindEventsUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    useCase = new FindEventsUseCaseImpl(eventRepository);
+    useCase = new FindEventsUseCaseImpl(eventRepository, eventMapper);
+    lenient().when(eventMapper.toSummaryResponse(any(Event.class))).thenAnswer(invocation -> {
+      Event e = invocation.getArgument(0);
+      return new EventSummaryResponse(
+          e.id().value(), e.name(), e.category(), e.eventDate(),
+          e.status().name(), e.organizerId().value());
+    });
   }
 
   @Test

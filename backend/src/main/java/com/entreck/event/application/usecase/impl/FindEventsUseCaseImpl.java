@@ -1,6 +1,7 @@
 package com.entreck.event.application.usecase.impl;
 
 import com.entreck.event.application.dto.EventSummaryResponse;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.FindEventsUseCase;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventSearchCriteria;
@@ -18,14 +19,17 @@ import java.util.List;
 public class FindEventsUseCaseImpl implements FindEventsUseCase {
 
   private final EventRepository eventRepository;
+  private final EventMapper eventMapper;
 
   /**
    * Constructs the use case with the required port.
    *
    * @param eventRepository the event repository port
+   * @param eventMapper the event mapper
    */
-  public FindEventsUseCaseImpl(EventRepository eventRepository) {
+  public FindEventsUseCaseImpl(EventRepository eventRepository, EventMapper eventMapper) {
     this.eventRepository = eventRepository;
+    this.eventMapper = eventMapper;
   }
 
   /** {@inheritDoc} */
@@ -36,7 +40,7 @@ public class FindEventsUseCaseImpl implements FindEventsUseCase {
     DomainPage<Event> domainPage = eventRepository.search(criteria, page, size);
 
     List<EventSummaryResponse> summaries = domainPage.content().stream()
-        .map(EventSummaryResponse::from)
+        .map(eventMapper::toSummaryResponse)
         .toList();
 
     return DomainPage.of(summaries, domainPage.meta());

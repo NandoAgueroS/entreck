@@ -3,6 +3,7 @@ package com.entreck.event.application.usecase.impl;
 import com.entreck.event.application.dto.CreateEventRequest;
 import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.exception.DuplicateEventNameException;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.PublishEventUseCase;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
@@ -21,14 +22,17 @@ import java.time.Instant;
 public class PublishEventUseCaseImpl implements PublishEventUseCase {
 
   private final EventRepository eventRepository;
+  private final EventMapper eventMapper;
 
   /**
    * Constructs the use case with the required port.
    *
    * @param eventRepository the event repository port
+   * @param eventMapper the event mapper
    */
-  public PublishEventUseCaseImpl(EventRepository eventRepository) {
+  public PublishEventUseCaseImpl(EventRepository eventRepository, EventMapper eventMapper) {
     this.eventRepository = eventRepository;
+    this.eventMapper = eventMapper;
   }
 
   /**
@@ -60,6 +64,6 @@ public class PublishEventUseCaseImpl implements PublishEventUseCase {
 
     event.publish();
     Event saved = eventRepository.save(event);
-    return EventResponse.from(saved);
+    return eventMapper.toResponse(saved);
   }
 }

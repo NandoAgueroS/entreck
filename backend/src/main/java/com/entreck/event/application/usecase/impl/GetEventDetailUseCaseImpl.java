@@ -2,6 +2,7 @@ package com.entreck.event.application.usecase.impl;
 
 import com.entreck.event.application.dto.EventDetailResponse;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.GetEventDetailUseCase;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.repository.EventRepository;
@@ -16,14 +17,17 @@ import com.entreck.shared.domain.id.EventId;
 public class GetEventDetailUseCaseImpl implements GetEventDetailUseCase {
 
   private final EventRepository eventRepository;
+  private final EventMapper eventMapper;
 
   /**
    * Constructs the use case with the required port.
    *
    * @param eventRepository the event repository port
+   * @param eventMapper the event mapper
    */
-  public GetEventDetailUseCaseImpl(EventRepository eventRepository) {
+  public GetEventDetailUseCaseImpl(EventRepository eventRepository, EventMapper eventMapper) {
     this.eventRepository = eventRepository;
+    this.eventMapper = eventMapper;
   }
 
   /**
@@ -37,6 +41,6 @@ public class GetEventDetailUseCaseImpl implements GetEventDetailUseCase {
   public EventDetailResponse execute(EventId eventId) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new EventNotFoundException(eventId));
-    return EventDetailResponse.from(event);
+    return eventMapper.toDetailResponse(event);
   }
 }

@@ -4,6 +4,7 @@ import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.dto.UpdateEventRequest;
 import com.entreck.event.application.exception.DuplicateEventNameException;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.impl.UpdateEventUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,9 @@ class UpdateEventUseCaseTest {
 
   @Mock
   private EventRepository eventRepository;
+
+  @Mock
+  private EventMapper eventMapper;
 
   private UpdateEventUseCaseImpl useCase;
 
@@ -55,7 +60,14 @@ class UpdateEventUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    useCase = new UpdateEventUseCaseImpl(eventRepository);
+    useCase = new UpdateEventUseCaseImpl(eventRepository, eventMapper);
+    lenient().when(eventMapper.toResponse(any(Event.class))).thenAnswer(invocation -> {
+      Event e = invocation.getArgument(0);
+      return new EventResponse(
+          e.id().value(), e.name(), e.category(), e.eventDate(),
+          e.description(), e.status().name(), e.organizerId().value(),
+          e.createdAt(), e.updatedAt());
+    });
   }
 
   @Test

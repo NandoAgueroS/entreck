@@ -2,6 +2,7 @@ package com.entreck.event.application.usecase;
 
 import com.entreck.event.application.dto.EventDetailResponse;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.mapper.EventMapper;
 import com.entreck.event.application.usecase.impl.GetEventDetailUseCaseImpl;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventStatus;
@@ -21,6 +22,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +34,9 @@ class GetEventDetailUseCaseTest {
   @Mock
   private EventRepository eventRepository;
 
+  @Mock
+  private EventMapper eventMapper;
+
   private GetEventDetailUseCaseImpl useCase;
 
   private final EventId eventId = new EventId(1L);
@@ -39,7 +45,14 @@ class GetEventDetailUseCaseTest {
 
   @BeforeEach
   void setUp() {
-    useCase = new GetEventDetailUseCaseImpl(eventRepository);
+    useCase = new GetEventDetailUseCaseImpl(eventRepository, eventMapper);
+    lenient().when(eventMapper.toDetailResponse(any(Event.class))).thenAnswer(invocation -> {
+      Event e = invocation.getArgument(0);
+      return new EventDetailResponse(
+          e.id().value(), e.name(), e.category(), e.eventDate(),
+          e.description(), e.status().name(), e.organizerId().value(),
+          e.createdAt(), e.updatedAt());
+    });
   }
 
   @Test

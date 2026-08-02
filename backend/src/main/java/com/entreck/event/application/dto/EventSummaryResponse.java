@@ -1,8 +1,6 @@
 package com.entreck.event.application.dto;
 
-import com.entreck.event.domain.Event;
 import com.entreck.shared.domain.enums.EventCategory;
-import com.entreck.shared.domain.id.EventId;
 import java.time.Instant;
 
 /**
@@ -24,21 +22,4 @@ public record EventSummaryResponse(
     EventCategory category,
     Instant eventDate,
     String status,
-    Long organizerId) {
-
-  /**
-   * Maps a domain Event to a summary response DTO.
-   *
-   * @param event the domain event
-   * @return the summary response DTO
-   */
-  public static EventSummaryResponse from(Event event) {
-    return new EventSummaryResponse(
-        event.id().value(),
-        event.name(),
-        event.category(),
-        event.eventDate(),
-        event.status().name(),
-        event.organizerId().value());
-  }
-}
+    Long organizerId) {}
