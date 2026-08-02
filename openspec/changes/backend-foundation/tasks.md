@@ -72,19 +72,19 @@ Chain strategy: feature-branch-chain
 ## Slice 3 — Event Infrastructure + API (~250 lines)
 
 ### infrastructure
-- [ ] **3.1.1** Create `event/infrastructure/persistence/EventJpaEntity.java` — `@Entity` mapping to `events` table, all columns incl. `organizer_id`, `status` enum.
-- [ ] **3.1.2** Create `event/infrastructure/persistence/SpringDataEventRepository.java` — `extends JpaRepository<EventJpaEntity, Long>` + derived queries (name+category+pageable).
-- [ ] **3.1.3** Create `event/infrastructure/persistence/EventMapper.java` — static `toDomain`/`toJpaEntity` (ADR-3).
-- [ ] **3.1.4** Create `event/infrastructure/persistence/EventRepositoryAdapter.java` — `@Repository`, implements `EventRepository` port via Spring Data repo.
+- [x] **3.1.1** Create `event/infrastructure/persistence/EventJpaEntity.java` — `@Entity` mapping to `events` table, all columns incl. `organizer_id`, `status` enum.
+- [x] **3.1.2** Create `event/infrastructure/persistence/SpringDataEventRepository.java` — `extends JpaRepository<EventJpaEntity, Long>` + derived queries (name+category+pageable).
+- [x] **3.1.3** Create `event/infrastructure/persistence/EventMapper.java` — static `toDomain`/`toJpaEntity` (ADR-3).
+- [x] **3.1.4** Create `event/infrastructure/persistence/EventRepositoryAdapter.java` — `@Repository`, implements `EventRepository` port via Spring Data repo.
 
 ### interfaces
-- [ ] **3.2.1** Create `event/interfaces/EventController.java` — `@RestController` `/api/v1/events`: GET search (B01/B02), GET by id (B03), POST publish (O01), PATCH update (O02, ADR-13).
-- [ ] **3.2.2** Add `@Valid` on request bodies + HTTP status mapping (201 for POST, 200 for GET/PATCH) per design §3.2.
+- [x] **3.2.1** Create `event/interfaces/EventController.java` — `@RestController` `/api/v1/events`: GET search (B01/B02), GET by id (B03), POST publish (O01), PATCH update (O02, ADR-13).
+- [x] **3.2.2** Add `@Valid` on request bodies + HTTP status mapping (201 for POST, 200 for GET/PATCH) per design §3.2.
 
 ### tests
-- [ ] **3.3.1** Create `EventRepositoryAdapterIT.java` extends `BaseIntegrationTest` — `@DataJpaTest` verifies save/find/search pagination + unique-name conflict.
-- [ ] **3.3.2** Create `EventControllerWebMvcTest.java` — `@WebMvcTest` with `@MockBean` use cases, verifies validation, 200/201/404/422 mapping, JSON shape.
-- [ ] **3.3.3** Verify `./mvnw test` passes — adapter + controller tests green.
+- [x] **3.3.1** Create `EventRepositoryAdapterIT.java` extends `BaseIntegrationTest` — `@DataJpaTest` verifies save/find/search pagination + unique-name conflict.
+- [x] **3.3.2** Create `EventControllerWebMvcTest.java` — `@WebMvcTest` with `@MockBean` use cases, verifies validation, 200/201/404/422 mapping, JSON shape.
+- [x] **3.3.3** Verify `./mvnw test` passes — adapter + controller tests green.
 
 ## Slice 4 — POS Domain + Application (~180 lines)
 
