@@ -29,15 +29,7 @@ public class FindEventsUseCase implements FindEventsUseCaseInterface {
     this.eventRepository = eventRepository;
   }
 
-  /**
-   * Executes the use case with optional filters.
-   *
-   * @param name optional name filter (exact match), or null for all
-   * @param category optional category filter, or null for all
-   * @param page the page number (0-based)
-   * @param size the page size
-   * @return a paginated result of event summaries
-   */
+  /** {@inheritDoc} */
   @Override
   public DomainPage<EventSummaryResponse> execute(
       String name, EventCategory category, int page, int size) {
@@ -49,17 +41,5 @@ public class FindEventsUseCase implements FindEventsUseCaseInterface {
         .toList();
 
     return DomainPage.of(summaries, domainPage.meta());
-  }
-
-  /**
-   * Finds events by exact name match.
-   *
-   * @param name the event name
-   * @return a list of event summaries with the exact name
-   */
-  public List<EventSummaryResponse> findByName(String name) {
-    return eventRepository.findByName(name).stream()
-        .map(EventSummaryResponse::from)
-        .toList();
   }
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,20 +113,6 @@ class FindEventsUseCaseTest {
 
     assertThat(criteriaCaptor.getValue().name()).isNull();
     assertThat(criteriaCaptor.getValue().category()).isEqualTo(EventCategory.SPORTS);
-  }
-
-  @Test
-  @DisplayName("should find events by exact name")
-  void shouldFindEventsByExactName() {
-    Event event = createEvent(eventId1, "Exact Name", EventCategory.CONCERT);
-
-    when(eventRepository.findByName("Exact Name")).thenReturn(List.of(event));
-
-    List<EventSummaryResponse> result = useCase.findByName("Exact Name");
-
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).name()).isEqualTo("Exact Name");
-    verify(eventRepository).findByName("Exact Name");
   }
 
   @Test

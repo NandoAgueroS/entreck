@@ -14,13 +14,14 @@ import com.entreck.shared.domain.enums.EventCategory;
 public interface FindEventsUseCaseInterface {
 
   /**
-   * Searches events with optional filters.
+   * Searches for events by optional name and/or category filters, with pagination.
    *
-   * @param name optional name filter (exact match), or null for all
-   * @param category optional category filter, or null for all
-   * @param page the page number (0-based)
+   * @param name optional exact-match name filter, or null for all events
+   * @param category optional category filter, or null for all categories
+   * @param page the 0-based page number
    * @param size the page size
    * @return a paginated result of event summaries
+   * @throws IllegalArgumentException if page is negative or size is not positive
    */
   DomainPage<EventSummaryResponse> execute(String name, EventCategory category, int page, int size);
 }
