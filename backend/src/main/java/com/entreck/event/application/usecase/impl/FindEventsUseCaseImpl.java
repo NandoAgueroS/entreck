@@ -1,7 +1,7 @@
 package com.entreck.event.application.usecase.impl;
 
 import com.entreck.event.application.dto.EventSummaryResponse;
-import com.entreck.event.application.usecase.FindEventsUseCaseInterface;
+import com.entreck.event.application.usecase.FindEventsUseCase;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.EventSearchCriteria;
 import com.entreck.event.domain.repository.EventRepository;
@@ -15,7 +15,7 @@ import java.util.List;
  * <p>Supports filtering by name and/or category, with pagination. Returns
  * lightweight summaries suitable for list views.
  */
-public class FindEventsUseCaseImpl implements FindEventsUseCaseInterface {
+public class FindEventsUseCaseImpl implements FindEventsUseCase {
 
   private final EventRepository eventRepository;
 

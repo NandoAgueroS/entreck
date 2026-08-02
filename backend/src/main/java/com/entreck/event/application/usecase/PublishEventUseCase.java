@@ -12,7 +12,7 @@ import com.entreck.shared.domain.id.OrganizerId;
  * <p>Creates a new event in DRAFT status and immediately publishes it.
  * The event name must be unique across the system.
  */
-public interface PublishEventUseCaseInterface {
+public interface PublishEventUseCase {
 
   /**
    * Publishes a new event.

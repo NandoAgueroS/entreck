@@ -13,7 +13,7 @@ import com.entreck.shared.domain.id.EventId;
  * Only non-null fields in the request are applied. The event name must
  * remain unique.
  */
-public interface UpdateEventUseCaseInterface {
+public interface UpdateEventUseCase {
 
   /**
    * Updates an existing event.

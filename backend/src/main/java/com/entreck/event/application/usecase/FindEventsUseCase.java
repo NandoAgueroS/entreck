@@ -11,7 +11,7 @@ import com.entreck.shared.domain.enums.EventCategory;
  * and/or category, with pagination. Returns lightweight summaries suitable
  * for list views.
  */
-public interface FindEventsUseCaseInterface {
+public interface FindEventsUseCase {
 
   /**
    * Searches for events by optional name and/or category filters, with pagination.

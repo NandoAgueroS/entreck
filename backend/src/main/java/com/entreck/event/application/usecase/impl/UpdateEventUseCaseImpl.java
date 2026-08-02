@@ -4,7 +4,7 @@ import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.dto.UpdateEventRequest;
 import com.entreck.event.application.exception.DuplicateEventNameException;
 import com.entreck.event.application.exception.EventNotFoundException;
-import com.entreck.event.application.usecase.UpdateEventUseCaseInterface;
+import com.entreck.event.application.usecase.UpdateEventUseCase;
 import com.entreck.event.domain.Event;
 import com.entreck.event.domain.repository.EventRepository;
 import com.entreck.shared.domain.id.EventId;
@@ -15,7 +15,7 @@ import com.entreck.shared.domain.id.EventId;
  * <p>Applies partial updates (PATCH semantics) to an event. Only non-null
  * fields in the request are applied. The event name must remain unique.
  */
-public class UpdateEventUseCaseImpl implements UpdateEventUseCaseInterface {
+public class UpdateEventUseCaseImpl implements UpdateEventUseCase {
 
   private final EventRepository eventRepository;
 

@@ -10,7 +10,7 @@ import com.entreck.shared.domain.id.EventId;
  * <p>Returns a complete view of an event including all fields. Raises
  * {@link EventNotFoundException} if the event does not exist.
  */
-public interface GetEventDetailUseCaseInterface {
+public interface GetEventDetailUseCase {
 
   /**
    * Retrieves full detail for an event.
