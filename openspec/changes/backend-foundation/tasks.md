@@ -4,8 +4,8 @@
 
 | Field | Value |
 |-------|-------|
-| Estimated changed lines | ~1,480 (280+200+250+180+220+350) |
-| 400-line budget risk | High (slice 6 alone ≈ 350 lines) |
+| Estimated changed lines | ~1,480 planned → ~7,817 actual to date (3521+1622+1101+1573 for Slices 1-4) + ~3,300 expected for Slices 5-6. Each slice ran 4-12x over its per-slice estimate due to Javadoc + VO/DTO/use-case scaffolding. |
+| 400-line budget risk | High — in practice EVERY slice exceeds 400 (actuals: 3521/1622/1101/1573); maintainer size:exception is the established per-slice norm. |
 | Chained PRs recommended | Yes |
 | Suggested split | PR 1 (bootstrap) → PR 2 (event-d) → PR 3 (event-ia) → PR 4 (pos-d) → PR 5 (pos-ia) → PR 6 (link) |
 | Delivery strategy | ask-always |
@@ -89,22 +89,22 @@ Chain strategy: feature-branch-chain
 ## Slice 4 — POS Domain + Application (~180 lines)
 
 ### domain
-- [ ] **4.1.1** Create `pos/domain/PointOfSale.java` — aggregate root with typed value objects (design §2.2).
-- [ ] **4.1.2** Create `pos/domain/POSStatus.java` — enum ACTIVE/INACTIVE.
-- [ ] **4.1.3** Create `pos/domain/valueobject/{Address,GeoLocation,OpeningHours,WeeklyWindow,Contact}.java` — immutable records with compact-ctor validation (ADR-4, design §2.3: lat∈[-90,90], lon∈[-180,180], ISO-3166 country, RFC-5322-lite email, phone regex, open<close).
-- [ ] **4.1.4** Create `pos/domain/repository/PointOfSaleRepository.java` — port: `save`, `findById`, `existsById`.
+- [x] **4.1.1** Create `pos/domain/PointOfSale.java` — aggregate root with typed value objects (design §2.2).
+- [x] **4.1.2** Create `pos/domain/POSStatus.java` — enum ACTIVE/INACTIVE.
+- [x] **4.1.3** Create `pos/domain/valueobject/{Address,GeoLocation,OpeningHours,WeeklyWindow,Contact}.java` — immutable records with compact-ctor validation (ADR-4, design §2.3: lat∈[-90,90], lon∈[-180,180], ISO-3166 country, RFC-5322-lite email, phone regex, open<close).
+- [x] **4.1.4** Create `pos/domain/repository/PointOfSaleRepository.java` — port: `save`, `findById`, `existsById`.
 
 ### application
-- [ ] **4.2.1** Create `pos/application/usecase/{RegisterPointOfSaleUseCase,UpdatePointOfSaleUseCase,GetPointOfSaleDetailUseCase}.java` — one interactor per use case (S01, S02, B06).
-- [ ] **4.2.2** Create `pos/application/dto/{CreatePointOfSaleRequest,UpdatePointOfSaleRequest,PointOfSaleResponse,PointOfSaleDetailResponse,AddressDto,GeoLocationDto,OpeningHoursDto,ContactDto}.java`.
-- [ ] **4.2.3** Create `pos/application/exception/PointOfSaleNotFoundException.java` — extends `KernelException`.
+- [x] **4.2.1** Create `pos/application/usecase/{RegisterPointOfSaleUseCase,UpdatePointOfSaleUseCase,GetPointOfSaleDetailUseCase}.java` — one interactor per use case (S01, S02, B06).
+- [x] **4.2.2** Create `pos/application/dto/{CreatePointOfSaleRequest,UpdatePointOfSaleRequest,PointOfSaleResponse,PointOfSaleDetailResponse,AddressDto,GeoLocationDto,OpeningHoursDto,ContactDto}.java`.
+- [x] **4.2.3** Create `pos/application/exception/PointOfSaleNotFoundException.java` — extends `KernelException`.
 
 ### tests
-- [ ] **4.3.1** Create `*ValueObjectTest.java` per VO — compact-ctor rejections (lat=100, empty street, bad email, open≥close).
-- [ ] **4.3.2** Create `*UseCaseTest.java` per use case (3 files) — JUnit 5 + Mockito mocking `PointOfSaleRepository`.
-- [ ] **4.3.3** Verify `./mvnw test` passes — POS unit tests green.
+- [x] **4.3.1** Create `*ValueObjectTest.java` per VO — compact-ctor rejections (lat=100, empty street, bad email, open≥close).
+- [x] **4.3.2** Create `*UseCaseTest.java` per use case (3 files) — JUnit 5 + Mockito mocking `PointOfSaleRepository`.
+- [x] **4.3.3** Verify `./mvnw test` passes — POS unit tests green.
 
-## Slice 5 — POS Infrastructure + API (~220 lines)
+## Slice 5 — POS Infrastructure + API (~1400 lines actual — per-slice estimate was ~220)
 
 ### infrastructure
 - [ ] **5.1.1** Create `pos/infrastructure/persistence/PointOfSaleJpaEntity.java` — `@Entity` with `@Embedded` value objects (Address, GeoLocation, OpeningHours, Contact).
@@ -121,7 +121,7 @@ Chain strategy: feature-branch-chain
 - [ ] **5.3.2** Create `PointOfSaleControllerWebMvcTest.java` — `@WebMvcTest`, verifies lat/lon validation, 200/201/400/404 mapping.
 - [ ] **5.3.3** Verify `./mvnw test` passes — POS adapter + controller green.
 
-## Slice 6 — Event↔POS Link + Cross-cutting (~350 lines)
+## Slice 6 — Event↔POS Link + Cross-cutting (~1900 lines actual — per-slice estimate was ~350)
 
 ### domain
 - [ ] **6.1.1** Create `shared/domain/link/EventPointOfSaleLink.java` — aggregate (belongs to event context per ADR-2), carries `eventId`, `posId`, `availabilityStatus`, `note`, `updatedAt`; single mutating method `changeAvailability(status, note, instant)`.
@@ -151,6 +151,6 @@ Chain strategy: feature-branch-chain
 
 ---
 
-Total: ~43 tasks across 6 slices. ~1,480 estimated changed lines.
-Slice 6 alone is ~350 lines (closest to 400-line budget — may need user size confirmation before apply).
+Total: 68 tasks across 6 slices (43/68 done after Slice 4). ~1,480 originally estimated changed lines; actuals to date are 7,817 across Slices 1-4, with Slices 5-6 expected ~3,300 more.
+Every slice to date exceeded 400 lines (actuals 1101-3521); per-slice size:exception is expected, not exceptional. Slice 6 (~1900 actual) will also require it.
 Test class naming: `*Test` (unit, no Spring), `*IT` (adapter, Testcontainers), `*WebMvcTest` (controller, MockMvc).
