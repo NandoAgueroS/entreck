@@ -89,20 +89,20 @@ Chain strategy: feature-branch-chain
 ## Slice 4 — POS Domain + Application (~180 lines)
 
 ### domain
-- [ ] **4.1.1** Create `pos/domain/PointOfSale.java` — aggregate root with typed value objects (design §2.2).
-- [ ] **4.1.2** Create `pos/domain/POSStatus.java` — enum ACTIVE/INACTIVE.
-- [ ] **4.1.3** Create `pos/domain/valueobject/{Address,GeoLocation,OpeningHours,WeeklyWindow,Contact}.java` — immutable records with compact-ctor validation (ADR-4, design §2.3: lat∈[-90,90], lon∈[-180,180], ISO-3166 country, RFC-5322-lite email, phone regex, open<close).
-- [ ] **4.1.4** Create `pos/domain/repository/PointOfSaleRepository.java` — port: `save`, `findById`, `existsById`.
+- [x] **4.1.1** Create `pos/domain/PointOfSale.java` — aggregate root with typed value objects (design §2.2).
+- [x] **4.1.2** Create `pos/domain/POSStatus.java` — enum ACTIVE/INACTIVE.
+- [x] **4.1.3** Create `pos/domain/valueobject/{Address,GeoLocation,OpeningHours,WeeklyWindow,Contact}.java` — immutable records with compact-ctor validation (ADR-4, design §2.3: lat∈[-90,90], lon∈[-180,180], ISO-3166 country, RFC-5322-lite email, phone regex, open<close).
+- [x] **4.1.4** Create `pos/domain/repository/PointOfSaleRepository.java` — port: `save`, `findById`, `existsById`.
 
 ### application
-- [ ] **4.2.1** Create `pos/application/usecase/{RegisterPointOfSaleUseCase,UpdatePointOfSaleUseCase,GetPointOfSaleDetailUseCase}.java` — one interactor per use case (S01, S02, B06).
-- [ ] **4.2.2** Create `pos/application/dto/{CreatePointOfSaleRequest,UpdatePointOfSaleRequest,PointOfSaleResponse,PointOfSaleDetailResponse,AddressDto,GeoLocationDto,OpeningHoursDto,ContactDto}.java`.
-- [ ] **4.2.3** Create `pos/application/exception/PointOfSaleNotFoundException.java` — extends `KernelException`.
+- [x] **4.2.1** Create `pos/application/usecase/{RegisterPointOfSaleUseCase,UpdatePointOfSaleUseCase,GetPointOfSaleDetailUseCase}.java` — one interactor per use case (S01, S02, B06).
+- [x] **4.2.2** Create `pos/application/dto/{CreatePointOfSaleRequest,UpdatePointOfSaleRequest,PointOfSaleResponse,PointOfSaleDetailResponse,AddressDto,GeoLocationDto,OpeningHoursDto,ContactDto}.java`.
+- [x] **4.2.3** Create `pos/application/exception/PointOfSaleNotFoundException.java` — extends `KernelException`.
 
 ### tests
-- [ ] **4.3.1** Create `*ValueObjectTest.java` per VO — compact-ctor rejections (lat=100, empty street, bad email, open≥close).
-- [ ] **4.3.2** Create `*UseCaseTest.java` per use case (3 files) — JUnit 5 + Mockito mocking `PointOfSaleRepository`.
-- [ ] **4.3.3** Verify `./mvnw test` passes — POS unit tests green.
+- [x] **4.3.1** Create `*ValueObjectTest.java` per VO — compact-ctor rejections (lat=100, empty street, bad email, open≥close).
+- [x] **4.3.2** Create `*UseCaseTest.java` per use case (3 files) — JUnit 5 + Mockito mocking `PointOfSaleRepository`.
+- [x] **4.3.3** Verify `./mvnw test` passes — POS unit tests green.
 
 ## Slice 5 — POS Infrastructure + API (~220 lines)
 
