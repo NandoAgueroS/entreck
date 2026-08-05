@@ -124,33 +124,33 @@ Chain strategy: feature-branch-chain
 ## Slice 6 — Event↔POS Link + Cross-cutting (~1900 lines actual — per-slice estimate was ~350)
 
 ### domain
-- [ ] **6.1.1** Create `shared/domain/link/EventPointOfSaleLink.java` — aggregate (belongs to event context per ADR-2), carries `eventId`, `posId`, `availabilityStatus`, `note`, `updatedAt`; single mutating method `changeAvailability(status, note, instant)`.
-- [ ] **6.1.2** Create `shared/domain/link/LinkId.java` — `record LinkId(Long value)`.
-- [ ] **6.1.3** Create `shared/domain/link/repository/EventPointOfSaleLinkRepository.java` — port: `save`, `findByEventId`, `findByEventIdAndPosId`, `existsByEventIdAndPosId`, `delete`.
+- [x] **6.1.1** Create `shared/domain/link/EventPointOfSaleLink.java` — aggregate (belongs to event context per ADR-2), carries `eventId`, `posId`, `availabilityStatus`, `note`, `updatedAt`; single mutating method `changeAvailability(status, note, instant)`.
+- [x] **6.1.2** Create `shared/domain/link/LinkId.java` — `record LinkId(Long value)`.
+- [x] **6.1.3** Create `shared/domain/link/repository/EventPointOfSaleLinkRepository.java` — port: `save`, `findByEventId`, `findByEventIdAndPosId`, `existsByEventIdAndPosId`, `delete`.
 
 ### application
-- [ ] **6.2.1** Create `event/application/usecase/{AssociatePosToEventUseCase,DissociatePosFromEventUseCase,ListEventPointOfSaleUseCase,UpdateAvailabilityUseCase}.java` — one interactor per use case (O03, O04, B04, S03). Injects `EventRepository`, `PointOfSaleRepository`, `EventPointOfSaleLinkRepository`.
-- [ ] **6.2.2** Create `event/application/dto/{AssociateRequest,LinkedPosResponse,AvailabilityRequest,AvailabilityResponse}.java`.
-- [ ] **6.2.3** Create `event/application/exception/LinkAlreadyExistsException.java` (+ LinkNotFoundException if not yet in shared) — extend `KernelException`.
+- [x] **6.2.1** Create `event/application/usecase/{AssociatePosToEventUseCase,DissociatePosFromEventUseCase,ListEventPointOfSaleUseCase,UpdateAvailabilityUseCase}.java` — one interactor per use case (O03, O04, B04, S03). Injects `EventRepository`, `PointOfSaleRepository`, `EventPointOfSaleLinkRepository`.
+- [x] **6.2.2** Create `event/application/dto/{AssociateRequest,LinkedPosResponse,AvailabilityRequest,AvailabilityResponse}.java`.
+- [x] **6.2.3** Create `event/application/exception/LinkAlreadyExistsException.java` (+ LinkNotFoundException if not yet in shared) — extend `KernelException`.
 
 ### infrastructure
-- [ ] **6.3.1** Create `event/infrastructure/persistence/EventPointOfSaleLinkJpaEntity.java` — `@Entity`, unique constraint `(event_id, pos_id)` (design §2.4).
-- [ ] **6.3.2** Create `event/infrastructure/persistence/SpringDataEventPointOfSaleLinkRepository.java` + `EventPointOfSaleLinkMapper.java` + `EventPointOfSaleLinkRepositoryAdapter.java` (`@Repository`).
+- [x] **6.3.1** Create `event/infrastructure/persistence/EventPointOfSaleLinkJpaEntity.java` — `@Entity`, unique constraint `(event_id, pos_id)` (design §2.4).
+- [x] **6.3.2** Create `event/infrastructure/persistence/SpringDataEventPointOfSaleLinkRepository.java` + `EventPointOfSaleLinkMapper.java` + `EventPointOfSaleLinkRepositoryAdapter.java` (`@Repository`).
 
 ### interfaces
-- [ ] **6.4.1** Add B04/O03/O04 to `event/interfaces/EventController.java`: GET `/{eventId}/points-of-sale`, POST `/{eventId}/points-of-sale`, DELETE `/{eventId}/points-of-sale/{posId}`.
-- [ ] **6.4.2** Add S03 to `pos/interfaces/PointOfSaleController.java`: PUT `/{posId}/events/{eventId}/availability` (design §3.3).
-- [ ] **6.4.3** Finalize `shared/web/GlobalExceptionHandler.java` — map `EventNotFoundException`→404, `PointOfSaleNotFoundException`→404, `LinkNotFoundException`→404, `LinkAlreadyExistsException`→422, `DuplicateEventNameException`→422, `MethodArgumentNotValidException`→400 with field errors, generic `Exception`→500 with correlation id (design §3.4).
+- [x] **6.4.1** Add B04/O03/O04 to `event/interfaces/EventController.java`: GET `/{eventId}/points-of-sale`, POST `/{eventId}/points-of-sale`, DELETE `/{eventId}/points-of-sale/{posId}`.
+- [x] **6.4.2** Add S03 to `pos/interfaces/PointOfSaleController.java`: PUT `/{posId}/events/{eventId}/availability` (design §3.3).
+- [x] **6.4.3** Finalize `shared/web/GlobalExceptionHandler.java` — map `EventNotFoundException`→404, `PointOfSaleNotFoundException`→404, `LinkNotFoundException`→404, `LinkAlreadyExistsException`→422, `DuplicateEventNameException`→422, `MethodArgumentNotValidException`→400 with field errors, generic `Exception`→500 with correlation id (design §3.4).
 
 ### tests
-- [ ] **6.5.1** Create `EventPointOfSaleLinkTest.java` — aggregate invariants (append-only except `changeAvailability`, status enum invariant).
-- [ ] **6.5.2** Create `EventPointOfSaleLinkRepositoryAdapterIT.java` — `@DataJpaTest` verifies unique constraint, `changeAvailability` round-trip, cascade delete.
-- [ ] **6.5.3** Create `*UseCaseTest.java` for 4 link use cases — mock all 3 ports.
-- [ ] **6.5.4** Extend `EventControllerWebMvcTest` (B04/O03/O04), `PointOfSaleControllerWebMvcTest` (S03), add `GlobalExceptionHandlerTest` — verify 404/422/400/500 + correlation id header.
-- [ ] **6.5.5** Verify `./mvnw test` passes — full suite green.
+- [x] **6.5.1** Create `EventPointOfSaleLinkTest.java` — aggregate invariants (append-only except `changeAvailability`, status enum invariant).
+- [x] **6.5.2** Create `EventPointOfSaleLinkRepositoryAdapterIT.java` — `@DataJpaTest` verifies unique constraint, `changeAvailability` round-trip, cascade delete.
+- [x] **6.5.3** Create `*UseCaseTest.java` for 4 link use cases — mock all 3 ports.
+- [x] **6.5.4** Extend `EventControllerWebMvcTest` (B04/O03/O04), `PointOfSaleControllerWebMvcTest` (S03), add `GlobalExceptionHandlerTest` — verify 404/422/400/500 + correlation id header.
+- [x] **6.5.5** Verify `./mvnw test` passes — full suite green.
 
 ---
 
-Total: 68 tasks across 6 slices (43/68 done after Slice 4). ~1,480 originally estimated changed lines; actuals to date are 7,817 across Slices 1-4, with Slices 5-6 expected ~3,300 more.
-Every slice to date exceeded 400 lines (actuals 1101-3521); per-slice size:exception is expected, not exceptional. Slice 6 (~1900 actual) will also require it.
+Total: 68 tasks across 6 slices (68/68 done). ~1,480 originally estimated changed lines; actuals to date are 7,817 across Slices 1-4, with Slices 5-6 expected ~3,300 more.
+Every slice to date exceeded 400 lines (actuals 1101-3521); per-slice size:exception is expected, not exceptional. Slice 6 (~1900 actual) also required it.
 Test class naming: `*Test` (unit, no Spring), `*IT` (adapter, Testcontainers), `*WebMvcTest` (controller, MockMvc).

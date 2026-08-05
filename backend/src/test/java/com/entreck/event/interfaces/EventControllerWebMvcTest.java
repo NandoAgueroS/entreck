@@ -1,21 +1,29 @@
 package com.entreck.event.interfaces;
 
 import com.entreck.config.SecurityConfig;
+import com.entreck.event.application.dto.AssociateRequest;
 import com.entreck.event.application.dto.CreateEventRequest;
 import com.entreck.event.application.dto.EventDetailResponse;
 import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.dto.EventSummaryResponse;
+import com.entreck.event.application.dto.LinkedPosResponse;
 import com.entreck.event.application.dto.UpdateEventRequest;
 import com.entreck.event.application.exception.DuplicateEventNameException;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.event.application.exception.LinkAlreadyExistsException;
+import com.entreck.event.application.usecase.AssociatePosToEventUseCase;
+import com.entreck.event.application.usecase.DissociatePosFromEventUseCase;
 import com.entreck.event.application.usecase.FindEventsUseCase;
 import com.entreck.event.application.usecase.GetEventDetailUseCase;
+import com.entreck.event.application.usecase.ListEventPointOfSaleUseCase;
 import com.entreck.event.application.usecase.PublishEventUseCase;
 import com.entreck.event.application.usecase.UpdateEventUseCase;
 import com.entreck.shared.domain.DomainPage;
 import com.entreck.shared.domain.PageMeta;
+import com.entreck.shared.domain.enums.AvailabilityStatus;
 import com.entreck.shared.domain.enums.EventCategory;
 import com.entreck.shared.domain.id.EventId;
+import com.entreck.shared.domain.id.PointOfSaleId;
 import com.entreck.shared.web.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +38,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -58,6 +67,15 @@ class EventControllerWebMvcTest {
 
   @MockitoBean
   private GetEventDetailUseCase getEventDetailUseCase;
+
+  @MockitoBean
+  private AssociatePosToEventUseCase associatePosToEventUseCase;
+
+  @MockitoBean
+  private DissociatePosFromEventUseCase dissociatePosFromEventUseCase;
+
+  @MockitoBean
+  private ListEventPointOfSaleUseCase listEventPointOfSaleUseCase;
 
   @Test
   void searchEvents_returns200WithPageEnvelope() throws Exception {
@@ -244,5 +262,99 @@ class EventControllerWebMvcTest {
             .content(body))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+  }
+
+  // --- B04: List linked POS ---
+
+  @Test
+  void listEventPointOfSale_returns200() throws Exception {
+    LinkedPosResponse linked = new LinkedPosResponse(
+        1L, 1L, 2L, "Ticket Shop", AvailabilityStatus.AVAILABLE, "In stock", Instant.now());
+    when(listEventPointOfSaleUseCase.execute(any(EventId.class)))
+        .thenReturn(List.of(linked));
+
+    mockMvc.perform(get("/api/v1/events/1/points-of-sale"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].linkId").value(1))
+        .andExpect(jsonPath("$[0].posId").value(2))
+        .andExpect(jsonPath("$[0].posName").value("Ticket Shop"))
+        .andExpect(jsonPath("$[0].availabilityStatus").value("AVAILABLE"));
+  }
+
+  @Test
+  void listEventPointOfSale_returns404WhenEventNotFound() throws Exception {
+    when(listEventPointOfSaleUseCase.execute(any(EventId.class)))
+        .thenThrow(new EventNotFoundException(new EventId(999L)));
+
+    mockMvc.perform(get("/api/v1/events/999/points-of-sale"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("EVENT_NOT_FOUND"));
+  }
+
+  // --- O03: Associate POS ---
+
+  @Test
+  void associatePointOfSale_returns201() throws Exception {
+    LinkedPosResponse response = new LinkedPosResponse(
+        1L, 1L, 2L, null, AvailabilityStatus.UNKNOWN, "First batch", Instant.now());
+    when(associatePosToEventUseCase.execute(any(EventId.class), any(AssociateRequest.class)))
+        .thenReturn(response);
+
+    String body = """
+        {
+          "posId": 2,
+          "note": "First batch"
+        }
+        """;
+
+    mockMvc.perform(post("/api/v1/events/1/points-of-sale")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.linkId").value(1))
+        .andExpect(jsonPath("$.availabilityStatus").value("UNKNOWN"));
+  }
+
+  @Test
+  void associatePointOfSale_returns400WhenPosIdNull() throws Exception {
+    String body = """
+        {
+          "posId": null
+        }
+        """;
+
+    mockMvc.perform(post("/api/v1/events/1/points-of-sale")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+  }
+
+  @Test
+  void associatePointOfSale_returns422WhenDuplicate() throws Exception {
+    when(associatePosToEventUseCase.execute(any(EventId.class), any(AssociateRequest.class)))
+        .thenThrow(new LinkAlreadyExistsException(new EventId(1L), new PointOfSaleId(2L)));
+
+    String body = """
+        {
+          "posId": 2
+        }
+        """;
+
+    mockMvc.perform(post("/api/v1/events/1/points-of-sale")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.code").value("LINK_ALREADY_EXISTS"));
+  }
+
+  // --- O04: Dissociate POS ---
+
+  @Test
+  void dissociatePointOfSale_returns204() throws Exception {
+    mockMvc.perform(delete("/api/v1/events/1/points-of-sale/2"))
+        .andExpect(status().isNoContent());
+
+    verify(dissociatePosFromEventUseCase).execute(any(EventId.class), any(PointOfSaleId.class));
   }
 }

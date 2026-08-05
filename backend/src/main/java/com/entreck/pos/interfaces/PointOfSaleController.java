@@ -1,5 +1,8 @@
 package com.entreck.pos.interfaces;
 
+import com.entreck.event.application.dto.AvailabilityRequest;
+import com.entreck.event.application.dto.AvailabilityResponse;
+import com.entreck.event.application.usecase.UpdateAvailabilityUseCase;
 import com.entreck.pos.application.dto.CreatePointOfSaleRequest;
 import com.entreck.pos.application.dto.PointOfSaleDetailResponse;
 import com.entreck.pos.application.dto.PointOfSaleResponse;
@@ -7,6 +10,7 @@ import com.entreck.pos.application.dto.UpdatePointOfSaleRequest;
 import com.entreck.pos.application.usecase.GetPointOfSaleDetailUseCase;
 import com.entreck.pos.application.usecase.RegisterPointOfSaleUseCase;
 import com.entreck.pos.application.usecase.UpdatePointOfSaleUseCase;
+import com.entreck.shared.domain.id.EventId;
 import com.entreck.shared.domain.id.PointOfSaleId;
 import com.entreck.shared.domain.id.ShopId;
 import jakarta.validation.Valid;
@@ -26,6 +30,7 @@ public class PointOfSaleController {
   private final RegisterPointOfSaleUseCase registerPointOfSaleUseCase;
   private final UpdatePointOfSaleUseCase updatePointOfSaleUseCase;
   private final GetPointOfSaleDetailUseCase getPointOfSaleDetailUseCase;
+  private final UpdateAvailabilityUseCase updateAvailabilityUseCase;
 
   /**
    * Constructs the controller with the required use cases.
@@ -33,14 +38,17 @@ public class PointOfSaleController {
    * @param registerPointOfSaleUseCase the register-POS use case (S01)
    * @param updatePointOfSaleUseCase the update-POS use case (S02)
    * @param getPointOfSaleDetailUseCase the get-POS-detail use case (B06)
+   * @param updateAvailabilityUseCase the update-availability use case (S03)
    */
   public PointOfSaleController(
       RegisterPointOfSaleUseCase registerPointOfSaleUseCase,
       UpdatePointOfSaleUseCase updatePointOfSaleUseCase,
-      GetPointOfSaleDetailUseCase getPointOfSaleDetailUseCase) {
+      GetPointOfSaleDetailUseCase getPointOfSaleDetailUseCase,
+      UpdateAvailabilityUseCase updateAvailabilityUseCase) {
     this.registerPointOfSaleUseCase = registerPointOfSaleUseCase;
     this.updatePointOfSaleUseCase = updatePointOfSaleUseCase;
     this.getPointOfSaleDetailUseCase = getPointOfSaleDetailUseCase;
+    this.updateAvailabilityUseCase = updateAvailabilityUseCase;
   }
 
   /**
@@ -87,5 +95,23 @@ public class PointOfSaleController {
       @PathVariable Long id,
       @Valid @RequestBody UpdatePointOfSaleRequest request) {
     return updatePointOfSaleUseCase.execute(new PointOfSaleId(id), request);
+  }
+
+  /**
+   * Updates the availability of an event-POS link (S03, ADR-13).
+   *
+   * @param posId the point-of-sale identifier
+   * @param eventId the event identifier
+   * @param request the validated availability request (PUT semantics)
+   * @return the updated availability response
+   */
+  @PutMapping("/{posId}/events/{eventId}/availability")
+  @ResponseStatus(HttpStatus.OK)
+  public AvailabilityResponse updateAvailability(
+      @PathVariable Long posId,
+      @PathVariable Long eventId,
+      @Valid @RequestBody AvailabilityRequest request) {
+    return updateAvailabilityUseCase.execute(
+        new EventId(eventId), new PointOfSaleId(posId), request);
   }
 }
