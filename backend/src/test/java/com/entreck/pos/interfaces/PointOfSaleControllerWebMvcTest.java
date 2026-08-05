@@ -1,6 +1,10 @@
 package com.entreck.pos.interfaces;
 
 import com.entreck.config.SecurityConfig;
+import com.entreck.event.application.dto.AvailabilityRequest;
+import com.entreck.event.application.dto.AvailabilityResponse;
+import com.entreck.event.application.exception.LinkNotFoundException;
+import com.entreck.event.application.usecase.UpdateAvailabilityUseCase;
 import com.entreck.pos.application.dto.AddressDto;
 import com.entreck.pos.application.dto.ContactDto;
 import com.entreck.pos.application.dto.CreatePointOfSaleRequest;
@@ -13,6 +17,8 @@ import com.entreck.pos.application.exception.PointOfSaleNotFoundException;
 import com.entreck.pos.application.usecase.GetPointOfSaleDetailUseCase;
 import com.entreck.pos.application.usecase.RegisterPointOfSaleUseCase;
 import com.entreck.pos.application.usecase.UpdatePointOfSaleUseCase;
+import com.entreck.shared.domain.enums.AvailabilityStatus;
+import com.entreck.shared.domain.id.EventId;
 import com.entreck.shared.domain.id.PointOfSaleId;
 import com.entreck.shared.web.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
@@ -55,6 +61,9 @@ class PointOfSaleControllerWebMvcTest {
 
   @MockitoBean
   private GetPointOfSaleDetailUseCase getPointOfSaleDetailUseCase;
+
+  @MockitoBean
+  private UpdateAvailabilityUseCase updateAvailabilityUseCase;
 
   @Test
   void getPointOfSaleDetail_returns200() throws Exception {
@@ -357,5 +366,65 @@ class PointOfSaleControllerWebMvcTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
         .andExpect(jsonPath("$.fieldErrors[0].field").value("location.latitude"));
+  }
+
+  // --- S03: Update availability ---
+
+  @Test
+  void updateAvailability_returns200() throws Exception {
+    AvailabilityResponse response = new AvailabilityResponse(
+        1L, 10L, 1L, AvailabilityStatus.LIMITED, "Low stock", Instant.now());
+    when(updateAvailabilityUseCase.execute(
+        any(EventId.class), any(PointOfSaleId.class), any(AvailabilityRequest.class)))
+        .thenReturn(response);
+
+    String body = """
+        {
+          "availabilityStatus": "LIMITED",
+          "note": "Low stock"
+        }
+        """;
+
+    mockMvc.perform(put("/api/v1/points-of-sale/1/events/10/availability")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.linkId").value(1))
+        .andExpect(jsonPath("$.availabilityStatus").value("LIMITED"))
+        .andExpect(jsonPath("$.note").value("Low stock"));
+  }
+
+  @Test
+  void updateAvailability_returns400WhenStatusNull() throws Exception {
+    String body = """
+        {
+          "note": "Missing status"
+        }
+        """;
+
+    mockMvc.perform(put("/api/v1/points-of-sale/1/events/10/availability")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+  }
+
+  @Test
+  void updateAvailability_returns404WhenLinkNotFound() throws Exception {
+    when(updateAvailabilityUseCase.execute(
+        any(EventId.class), any(PointOfSaleId.class), any(AvailabilityRequest.class)))
+        .thenThrow(new LinkNotFoundException(new EventId(10L), new PointOfSaleId(1L)));
+
+    String body = """
+        {
+          "availabilityStatus": "SOLD_OUT"
+        }
+        """;
+
+    mockMvc.perform(put("/api/v1/points-of-sale/1/events/10/availability")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("LINK_NOT_FOUND"));
   }
 }

@@ -1,20 +1,27 @@
 package com.entreck.event.interfaces;
 
+import com.entreck.event.application.dto.AssociateRequest;
 import com.entreck.event.application.dto.CreateEventRequest;
 import com.entreck.event.application.dto.EventDetailResponse;
 import com.entreck.event.application.dto.EventResponse;
 import com.entreck.event.application.dto.EventSummaryResponse;
+import com.entreck.event.application.dto.LinkedPosResponse;
 import com.entreck.event.application.dto.UpdateEventRequest;
+import com.entreck.event.application.usecase.AssociatePosToEventUseCase;
+import com.entreck.event.application.usecase.DissociatePosFromEventUseCase;
 import com.entreck.event.application.usecase.FindEventsUseCase;
 import com.entreck.event.application.usecase.GetEventDetailUseCase;
+import com.entreck.event.application.usecase.ListEventPointOfSaleUseCase;
 import com.entreck.event.application.usecase.PublishEventUseCase;
 import com.entreck.event.application.usecase.UpdateEventUseCase;
 import com.entreck.shared.domain.DomainPage;
 import com.entreck.shared.domain.id.EventId;
 import com.entreck.shared.domain.id.OrganizerId;
+import com.entreck.shared.domain.id.PointOfSaleId;
 import com.entreck.shared.domain.enums.EventCategory;
 import com.entreck.shared.web.PageResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +41,9 @@ public class EventController {
   private final UpdateEventUseCase updateEventUseCase;
   private final FindEventsUseCase findEventsUseCase;
   private final GetEventDetailUseCase getEventDetailUseCase;
+  private final AssociatePosToEventUseCase associatePosToEventUseCase;
+  private final DissociatePosFromEventUseCase dissociatePosFromEventUseCase;
+  private final ListEventPointOfSaleUseCase listEventPointOfSaleUseCase;
 
   /**
    * Constructs the controller with the required use cases.
@@ -42,16 +52,25 @@ public class EventController {
    * @param updateEventUseCase the update-event use case (O02)
    * @param findEventsUseCase the find-events use case (B01, B02)
    * @param getEventDetailUseCase the get-event-detail use case (B03)
+   * @param associatePosToEventUseCase the associate-POS use case (O03)
+   * @param dissociatePosFromEventUseCase the dissociate-POS use case (O04)
+   * @param listEventPointOfSaleUseCase the list-linked-POS use case (B04)
    */
   public EventController(
       PublishEventUseCase publishEventUseCase,
       UpdateEventUseCase updateEventUseCase,
       FindEventsUseCase findEventsUseCase,
-      GetEventDetailUseCase getEventDetailUseCase) {
+      GetEventDetailUseCase getEventDetailUseCase,
+      AssociatePosToEventUseCase associatePosToEventUseCase,
+      DissociatePosFromEventUseCase dissociatePosFromEventUseCase,
+      ListEventPointOfSaleUseCase listEventPointOfSaleUseCase) {
     this.publishEventUseCase = publishEventUseCase;
     this.updateEventUseCase = updateEventUseCase;
     this.findEventsUseCase = findEventsUseCase;
     this.getEventDetailUseCase = getEventDetailUseCase;
+    this.associatePosToEventUseCase = associatePosToEventUseCase;
+    this.dissociatePosFromEventUseCase = dissociatePosFromEventUseCase;
+    this.listEventPointOfSaleUseCase = listEventPointOfSaleUseCase;
   }
 
   /**
@@ -124,5 +143,46 @@ public class EventController {
       @PathVariable Long id,
       @Valid @RequestBody UpdateEventRequest request) {
     return updateEventUseCase.execute(new EventId(id), request);
+  }
+
+  /**
+   * Lists all POS records linked to an event (B04).
+   *
+   * @param eventId the event identifier
+   * @return a list of linked POS responses with availability status
+   */
+  @GetMapping("/{eventId}/points-of-sale")
+  @ResponseStatus(HttpStatus.OK)
+  public List<LinkedPosResponse> listEventPointOfSale(@PathVariable Long eventId) {
+    return listEventPointOfSaleUseCase.execute(new EventId(eventId));
+  }
+
+  /**
+   * Associates a PointOfSale with an Event (O03).
+   *
+   * @param eventId the event identifier
+   * @param request the association request
+   * @return the created link response with HTTP 201
+   */
+  @PostMapping("/{eventId}/points-of-sale")
+  @ResponseStatus(HttpStatus.CREATED)
+  public LinkedPosResponse associatePointOfSale(
+      @PathVariable Long eventId,
+      @Valid @RequestBody AssociateRequest request) {
+    return associatePosToEventUseCase.execute(new EventId(eventId), request);
+  }
+
+  /**
+   * Dissociates a PointOfSale from an Event (O04).
+   *
+   * @param eventId the event identifier
+   * @param posId the point-of-sale identifier
+   */
+  @DeleteMapping("/{eventId}/points-of-sale/{posId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void dissociatePointOfSale(
+      @PathVariable Long eventId,
+      @PathVariable Long posId) {
+    dissociatePosFromEventUseCase.execute(new EventId(eventId), new PointOfSaleId(posId));
   }
 }
