@@ -107,19 +107,19 @@ Chain strategy: feature-branch-chain
 ## Slice 5 — POS Infrastructure + API (~1400 lines actual — per-slice estimate was ~220)
 
 ### infrastructure
-- [ ] **5.1.1** Create `pos/infrastructure/persistence/PointOfSaleJpaEntity.java` — `@Entity` with `@Embedded` value objects (Address, GeoLocation, OpeningHours, Contact).
-- [ ] **5.1.2** Create `pos/infrastructure/persistence/SpringDataPointOfSaleRepository.java` — extends `JpaRepository<PointOfSaleJpaEntity, Long>`.
-- [ ] **5.1.3** Create `pos/infrastructure/persistence/PointOfSaleMapper.java` — static `toDomain`/`toJpaEntity` including value-object mapping.
-- [ ] **5.1.4** Create `pos/infrastructure/persistence/PointOfSaleRepositoryAdapter.java` — `@Repository`, implements `PointOfSaleRepository` port.
+- [x] **5.1.1** Create `pos/infrastructure/persistence/PointOfSaleJpaEntity.java` — `@Entity` with `@Embedded` value objects (Address, GeoLocation, OpeningHours, Contact).
+- [x] **5.1.2** Create `pos/infrastructure/persistence/SpringDataPointOfSaleRepository.java` — extends `JpaRepository<PointOfSaleJpaEntity, Long>`.
+- [x] **5.1.3** Create `pos/infrastructure/persistence/PointOfSaleMapper.java` — static `toDomain`/`toJpaEntity` including value-object mapping.
+- [x] **5.1.4** Create `pos/infrastructure/persistence/PointOfSaleRepositoryAdapter.java` — `@Repository`, implements `PointOfSaleRepository` port.
 
 ### interfaces
-- [ ] **5.2.1** Create `pos/interfaces/PointOfSaleController.java` — `@RestController` `/api/v1/points-of-sale`: GET detail (B06), POST register (S01), PATCH update (S02).
-- [ ] **5.2.2** Add `@Valid` on nested `location.latitude`/`location.longitude` (field-level errors per design §3.3).
+- [x] **5.2.1** Create `pos/interfaces/PointOfSaleController.java` — `@RestController` `/api/v1/points-of-sale`: GET detail (B06), POST register (S01), PATCH update (S02).
+- [x] **5.2.2** Add `@Valid` on nested `location.latitude`/`location.longitude` (field-level errors per design §3.3).
 
 ### tests
-- [ ] **5.3.1** Create `PointOfSaleRepositoryAdapterIT.java` — `@DataJpaTest` with Testcontainers, verifies embedded VO round-trip + lat/lon range persisted.
-- [ ] **5.3.2** Create `PointOfSaleControllerWebMvcTest.java` — `@WebMvcTest`, verifies lat/lon validation, 200/201/400/404 mapping.
-- [ ] **5.3.3** Verify `./mvnw test` passes — POS adapter + controller green.
+- [x] **5.3.1** Create `PointOfSaleRepositoryAdapterIT.java` — `@DataJpaTest` with Testcontainers, verifies embedded VO round-trip + lat/lon range persisted.
+- [x] **5.3.2** Create `PointOfSaleControllerWebMvcTest.java` — `@WebMvcTest`, verifies lat/lon validation, 200/201/400/404 mapping.
+- [x] **5.3.3** Verify `./mvnw test` passes — POS adapter + controller green.
 
 ## Slice 6 — Event↔POS Link + Cross-cutting (~1900 lines actual — per-slice estimate was ~350)
 

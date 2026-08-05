@@ -2,6 +2,7 @@ package com.entreck.shared.web;
 
 import com.entreck.event.application.exception.DuplicateEventNameException;
 import com.entreck.event.application.exception.EventNotFoundException;
+import com.entreck.pos.application.exception.PointOfSaleNotFoundException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Global exception handler providing consistent error responses.
  *
- * <p>Validation and domain-level error mappings are handled here. Event
- * exceptions are mapped in this slice; POS and link exceptions will be added
- * in the final cross-cutting slice (slice 6).
+ * <p>Validation and domain-level error mappings are handled here. Event and
+ * POS exceptions are mapped; link exceptions will be added in the final
+ * cross-cutting slice (slice 6).
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -57,6 +58,18 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleDuplicateEventName(DuplicateEventNameException ex) {
     ErrorResponse body = new ErrorResponse("DUPLICATE_EVENT_NAME", ex.getMessage());
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+  }
+
+  /**
+   * Handles point-of-sale-not-found errors.
+   *
+   * @param ex the POS not found exception
+   * @return a 404 response
+   */
+  @ExceptionHandler(PointOfSaleNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handlePointOfSaleNotFound(PointOfSaleNotFoundException ex) {
+    ErrorResponse body = new ErrorResponse("POS_NOT_FOUND", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
   }
 
   /**
