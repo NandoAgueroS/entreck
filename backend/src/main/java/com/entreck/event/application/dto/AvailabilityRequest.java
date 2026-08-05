@@ -1,0 +1,14 @@
+package com.entreck.event.application.dto;
+
+import com.entreck.shared.domain.enums.AvailabilityStatus;
+import jakarta.validation.constraints.NotNull;
+
+/**
+ * Request DTO for updating the availability of an EventPointOfSaleLink (S03).
+ *
+ * @param availabilityStatus the new availability status
+ * @param note an optional note describing the availability change
+ */
+public record AvailabilityRequest(
+    @NotNull(message = "Availability status is required") AvailabilityStatus availabilityStatus,
+    String note) {}
