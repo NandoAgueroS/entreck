@@ -74,6 +74,20 @@ class PointOfSaleRepositoryAdapterIT extends BaseIntegrationTest {
   }
 
   @Test
+  void save_withNonExistentId_insertsInsteadOfThrowing() {
+    Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    PointOfSale pos = createTestPos("Recreated Shop", "500 Recreate St", -34.7, -58.2);
+
+    PointOfSale saved = pointOfSaleRepository.save(pos);
+    assertThat(saved.id().value()).isNotNull().isPositive();
+    assertThat(saved.id().value()).isNotEqualTo(pos.id().value());
+
+    Optional<PointOfSale> found = pointOfSaleRepository.findById(saved.id());
+    assertThat(found).isPresent();
+    assertThat(found.get().name()).isEqualTo("Recreated Shop");
+  }
+
+  @Test
   void save_persistsAddressValueObject() {
     Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
     PointOfSale pos = createTestPos("Address Test", "789 Pine Rd", -34.6, -58.3);

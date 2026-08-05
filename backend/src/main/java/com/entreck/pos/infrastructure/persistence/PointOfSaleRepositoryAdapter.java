@@ -4,6 +4,7 @@ import com.entreck.pos.domain.PointOfSale;
 import com.entreck.pos.domain.repository.PointOfSaleRepository;
 import com.entreck.shared.domain.id.PointOfSaleId;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,11 +32,17 @@ public class PointOfSaleRepositoryAdapter implements PointOfSaleRepository {
 
   /** {@inheritDoc} */
   @Override
+  @Transactional
   public PointOfSale save(PointOfSale pointOfSale) {
     PointOfSaleJpaEntity entity;
-    if (pointOfSale.id().value() != null && springDataRepo.existsById(pointOfSale.id().value())) {
-      entity = springDataRepo.findById(pointOfSale.id().value()).orElseThrow();
-      PointOfSaleMapper.updateEntityFields(entity, pointOfSale);
+    if (pointOfSale.id().value() != null) {
+      entity = springDataRepo.findById(pointOfSale.id().value()).orElse(null);
+      if (entity != null) {
+        PointOfSaleMapper.updateEntityFields(entity, pointOfSale);
+      } else {
+        entity = PointOfSaleMapper.toJpaEntity(pointOfSale);
+        entity.setId(null); // let JPA auto-generate
+      }
     } else {
       entity = PointOfSaleMapper.toJpaEntity(pointOfSale);
       entity.setId(null); // let JPA auto-generate
