@@ -16,6 +16,8 @@ local.properties
 
 # Local agent / tool caches
 .atl/
+.agents/
+skills-lock.json
 
 # Logs
 *.log
