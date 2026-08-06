@@ -11,6 +11,7 @@ import com.entreck.event.domain.repository.EventRepository;
 import com.entreck.shared.domain.id.EventId;
 import com.entreck.shared.domain.id.OrganizerId;
 import java.time.Instant;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Use case for creating and publishing a new event (O01).
@@ -46,10 +47,6 @@ public class PublishEventUseCaseImpl implements PublishEventUseCase {
    */
   @Override
   public EventResponse execute(CreateEventRequest request, OrganizerId organizerId, EventId eventId) {
-    if (eventRepository.existsByName(request.name())) {
-      throw new DuplicateEventNameException(request.name());
-    }
-
     Instant now = Instant.now();
     Event event = new Event(
         eventId,
@@ -63,7 +60,12 @@ public class PublishEventUseCaseImpl implements PublishEventUseCase {
         now);
 
     event.publish();
-    Event saved = eventRepository.save(event);
+    Event saved;
+    try {
+      saved = eventRepository.save(event);
+    } catch (DataIntegrityViolationException ex) {
+      throw new DuplicateEventNameException(request.name());
+    }
     return eventMapper.toResponse(saved);
   }
 }

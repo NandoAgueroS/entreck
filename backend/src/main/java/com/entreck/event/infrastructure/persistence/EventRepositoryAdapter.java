@@ -39,13 +39,10 @@ public class EventRepositoryAdapter implements EventRepository {
   /** {@inheritDoc} */
   @Override
   public Event save(Event event) {
-    EventJpaEntity entity;
-    if (springDataRepo.existsById(event.id().value())) {
-      entity = springDataRepo.findById(event.id().value()).orElseThrow();
-      EventMapper.updateEntityFields(entity, event);
-    } else {
-      entity = EventMapper.toJpaEntity(event);
-      entity.setId(null); // let JPA auto-generate
+    EventJpaEntity entity = EventMapper.toJpaEntity(event);
+    Long idValue = event.id().value();
+    if (idValue == null || idValue == 0L) {
+      entity.setId(null);
     }
     EventJpaEntity saved = springDataRepo.save(entity);
     return EventMapper.toDomain(saved);

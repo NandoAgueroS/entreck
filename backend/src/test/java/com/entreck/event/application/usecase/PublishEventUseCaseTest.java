@@ -24,7 +24,6 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,7 +64,6 @@ class PublishEventUseCaseTest {
         Instant.now().plusSeconds(86400),
         "A great concert");
 
-    when(eventRepository.existsByName("Concert Night")).thenReturn(false);
     when(eventRepository.save(any(Event.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     EventResponse response = useCase.execute(request, organizerId, eventId);
@@ -88,7 +86,8 @@ class PublishEventUseCaseTest {
         Instant.now().plusSeconds(86400),
         "Description");
 
-    when(eventRepository.existsByName("Existing Event")).thenReturn(true);
+    when(eventRepository.save(any(Event.class)))
+        .thenThrow(new org.springframework.dao.DataIntegrityViolationException("duplicate key"));
 
     assertThatThrownBy(() -> useCase.execute(request, organizerId, eventId))
         .isInstanceOf(DuplicateEventNameException.class)
@@ -104,11 +103,12 @@ class PublishEventUseCaseTest {
         Instant.now().plusSeconds(86400),
         "Description");
 
-    when(eventRepository.existsByName("Existing Event")).thenReturn(true);
+    when(eventRepository.save(any(Event.class)))
+        .thenThrow(new org.springframework.dao.DataIntegrityViolationException("duplicate key"));
 
     assertThatThrownBy(() -> useCase.execute(request, organizerId, eventId))
         .isInstanceOf(DuplicateEventNameException.class);
 
-    verify(eventRepository, org.mockito.Mockito.never()).save(any());
+    verify(eventRepository).save(any(Event.class));
   }
 }

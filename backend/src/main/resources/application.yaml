@@ -6,6 +6,7 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:example}
     password: ${SPRING_DATASOURCE_PASSWORD:example}
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     properties:
