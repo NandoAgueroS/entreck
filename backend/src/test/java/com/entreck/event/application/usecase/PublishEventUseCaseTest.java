@@ -64,6 +64,7 @@ class PublishEventUseCaseTest {
         Instant.now().plusSeconds(86400),
         "A great concert");
 
+    when(eventRepository.existsByName("Concert Night")).thenReturn(false);
     when(eventRepository.save(any(Event.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     EventResponse response = useCase.execute(request, organizerId, eventId);
@@ -79,36 +80,37 @@ class PublishEventUseCaseTest {
 
   @Test
   @DisplayName("should throw DuplicateEventNameException when name already exists")
-  void shouldThrowDuplicateEventNameException() {
+  void shouldThrowDuplicateEventNameExceptionWhenNameExists() {
     CreateEventRequest request = new CreateEventRequest(
         "Existing Event",
         EventCategory.CONCERT,
         Instant.now().plusSeconds(86400),
         "Description");
 
+    when(eventRepository.existsByName("Existing Event")).thenReturn(true);
+
+    assertThatThrownBy(() -> useCase.execute(request, organizerId, eventId))
+        .isInstanceOf(DuplicateEventNameException.class)
+        .hasMessageContaining("Event name already exists");
+
+    verify(eventRepository, org.mockito.Mockito.never()).save(any());
+  }
+
+  @Test
+  @DisplayName("should throw DuplicateEventNameException on concurrent duplicate insert")
+  void shouldThrowDuplicateEventNameExceptionOnConcurrentInsert() {
+    CreateEventRequest request = new CreateEventRequest(
+        "Concurrent Event",
+        EventCategory.CONCERT,
+        Instant.now().plusSeconds(86400),
+        "Description");
+
+    when(eventRepository.existsByName("Concurrent Event")).thenReturn(false);
     when(eventRepository.save(any(Event.class)))
         .thenThrow(new org.springframework.dao.DataIntegrityViolationException("duplicate key"));
 
     assertThatThrownBy(() -> useCase.execute(request, organizerId, eventId))
         .isInstanceOf(DuplicateEventNameException.class)
         .hasMessageContaining("Event name already exists");
-  }
-
-  @Test
-  @DisplayName("should NOT save event when name is duplicate")
-  void shouldNotSaveEventWhenNameIsDuplicate() {
-    CreateEventRequest request = new CreateEventRequest(
-        "Existing Event",
-        EventCategory.CONCERT,
-        Instant.now().plusSeconds(86400),
-        "Description");
-
-    when(eventRepository.save(any(Event.class)))
-        .thenThrow(new org.springframework.dao.DataIntegrityViolationException("duplicate key"));
-
-    assertThatThrownBy(() -> useCase.execute(request, organizerId, eventId))
-        .isInstanceOf(DuplicateEventNameException.class);
-
-    verify(eventRepository).save(any(Event.class));
   }
 }

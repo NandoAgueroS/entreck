@@ -47,6 +47,10 @@ public class PublishEventUseCaseImpl implements PublishEventUseCase {
    */
   @Override
   public EventResponse execute(CreateEventRequest request, OrganizerId organizerId, EventId eventId) {
+    if (eventRepository.existsByName(request.name())) {
+      throw new DuplicateEventNameException(request.name());
+    }
+
     Instant now = Instant.now();
     Event event = new Event(
         eventId,
