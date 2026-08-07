@@ -5,10 +5,12 @@ import com.entreck.event.application.exception.EventNotFoundException;
 import com.entreck.event.application.exception.LinkAlreadyExistsException;
 import com.entreck.event.application.exception.LinkNotFoundException;
 import com.entreck.pos.application.exception.PointOfSaleNotFoundException;
+import com.entreck.shared.domain.enums.EventCategory;
 import com.entreck.shared.domain.id.EventId;
 import com.entreck.shared.domain.id.PointOfSaleId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -77,6 +79,20 @@ class GlobalExceptionHandlerTest {
     assertThat(response.getStatusCode().value()).isEqualTo(500);
     assertThat(response.getBody().code()).isEqualTo("INTERNAL_ERROR");
     assertThat(response.getBody().correlationId()).isNotBlank();
+  }
+
+  @Test
+  @DisplayName("should map MethodArgumentTypeMismatchException to 400 VALIDATION_ERROR")
+  void shouldMapTypeMismatchTo400ValidationError() {
+    var response = handler.handleTypeMismatch(
+        new MethodArgumentTypeMismatchException("INVALID", EventCategory.class, "category", null, null));
+
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
+    assertThat(response.getBody().code()).isEqualTo("VALIDATION_ERROR");
+    assertThat(response.getBody().fieldErrors()).hasSize(1);
+    assertThat(response.getBody().fieldErrors().get(0).field()).isEqualTo("category");
+    assertThat(response.getBody().fieldErrors().get(0).message())
+        .isEqualTo("Invalid value for parameter category");
   }
 
   @Test

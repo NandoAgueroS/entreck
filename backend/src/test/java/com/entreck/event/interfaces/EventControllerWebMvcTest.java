@@ -101,6 +101,14 @@ class EventControllerWebMvcTest {
   }
 
   @Test
+  void searchEvents_returns400WhenCategoryInvalid() throws Exception {
+    mockMvc.perform(get("/api/v1/events").param("category", "INVALID"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+        .andExpect(jsonPath("$.fieldErrors").isNotEmpty());
+  }
+
+  @Test
   void searchEvents_capsPageSizeAt100() throws Exception {
     PageMeta meta = PageMeta.of(0, 100, 0, 0);
     DomainPage<EventSummaryResponse> page = DomainPage.of(List.of(), meta);
@@ -328,6 +336,23 @@ class EventControllerWebMvcTest {
             .content(body))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+  }
+
+  @Test
+  void associatePointOfSale_returns400WhenNoteTooLong() throws Exception {
+    String body = """
+        {
+          "posId": 2,
+          "note": "%s"
+        }
+        """.formatted("A".repeat(141));
+
+    mockMvc.perform(post("/api/v1/events/1/points-of-sale")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+        .andExpect(jsonPath("$.fieldErrors[0].field").value("note"));
   }
 
   @Test

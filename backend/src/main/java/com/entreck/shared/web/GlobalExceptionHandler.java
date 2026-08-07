@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * Global exception handler providing consistent error responses.
@@ -39,6 +40,22 @@ public class GlobalExceptionHandler {
       .toList();
 
     ErrorResponse body = new ErrorResponse("VALIDATION_ERROR", "Request validation failed", errors);
+    return ResponseEntity.badRequest().body(body);
+  }
+
+  /**
+   * Handles invalid query or path parameter types.
+   *
+   * @param ex the type mismatch exception
+   * @return a 400 response with a field-level error
+   */
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    String fieldName = ex.getParameter() != null && ex.getParameter().getParameterName() != null
+        ? ex.getParameter().getParameterName()
+        : (ex.getName() != null ? ex.getName() : "parameter");
+    FieldErrorItem error = new FieldErrorItem(fieldName, "Invalid value for parameter " + fieldName);
+    ErrorResponse body = new ErrorResponse("VALIDATION_ERROR", "Request validation failed", List.of(error));
     return ResponseEntity.badRequest().body(body);
   }
 

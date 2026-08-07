@@ -2,6 +2,7 @@ package com.entreck.event.application.dto;
 
 import com.entreck.shared.domain.enums.AvailabilityStatus;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Request DTO for updating the availability of an EventPointOfSaleLink (S03).
@@ -11,4 +12,4 @@ import jakarta.validation.constraints.NotNull;
  */
 public record AvailabilityRequest(
     @NotNull(message = "Availability status is required") AvailabilityStatus availabilityStatus,
-    String note) {}
+    @Size(max = 140, message = "Note must not exceed 140 characters") String note) {}

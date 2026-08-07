@@ -410,6 +410,23 @@ class PointOfSaleControllerWebMvcTest {
   }
 
   @Test
+  void updateAvailability_returns400WhenNoteTooLong() throws Exception {
+    String body = """
+        {
+          "availabilityStatus": "LIMITED",
+          "note": "%s"
+        }
+        """.formatted("A".repeat(141));
+
+    mockMvc.perform(put("/api/v1/points-of-sale/1/events/10/availability")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(body))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+        .andExpect(jsonPath("$.fieldErrors[0].field").value("note"));
+  }
+
+  @Test
   void updateAvailability_returns404WhenLinkNotFound() throws Exception {
     when(updateAvailabilityUseCase.execute(
         any(EventId.class), any(PointOfSaleId.class), any(AvailabilityRequest.class)))
