@@ -22,6 +22,7 @@ Backend and mobile are **independent builds** in one monorepo. Do not cross-impo
 | --- | --- |
 | [AGENTS.md](AGENTS.md) | Stack, architecture, testing, git, agent rules |
 | [docs/use-cases.md](docs/use-cases.md) | MVP actors, use cases, product decisions |
+| [docs/api/openapi.yaml](docs/api/openapi.yaml) | Contract-first OpenAPI 3.1 spec for the `/api/v1` endpoints |
 
 ## Backend (quick start)
 
@@ -59,6 +60,12 @@ requests so the API can be deployed behind a private network or an auth proxy.
 JWT-based authentication is planned for v1.1.
 
 API endpoints are versioned under `/api/v1` once slices 2-6 land.
+
+### Swagger UI
+
+Swagger UI is available at `http://localhost:8080/swagger-ui.html` when the
+app is running. It serves the contract-first spec from
+`docs/api/openapi.yaml` (copied into the build at process-resources time).
 
 ## Mobile
 

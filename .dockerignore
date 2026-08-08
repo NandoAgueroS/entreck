@@ -1,0 +1,5 @@
+.git
+backend/target
+app
+.codegraph
+*.log

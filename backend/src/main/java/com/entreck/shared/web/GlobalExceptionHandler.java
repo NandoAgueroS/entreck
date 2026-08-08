@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Global exception handler providing consistent error responses.
@@ -117,6 +118,19 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleLinkAlreadyExists(LinkAlreadyExistsException ex) {
     ErrorResponse body = new ErrorResponse("LINK_ALREADY_EXISTS", ex.getMessage());
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+  }
+
+  /**
+   * Handles missing static resources with a clean 404 instead of masking
+   * them as 500 via the catch-all below.
+   *
+   * @param ex the not-found exception
+   * @return a 404 response
+   */
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
+    ErrorResponse body = new ErrorResponse("RESOURCE_NOT_FOUND", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
   }
 
   /**

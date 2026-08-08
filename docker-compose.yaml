@@ -13,12 +13,12 @@ services:
       timeout: 3s
       retries: 10
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     depends_on:
       db:
         condition: service_healthy
